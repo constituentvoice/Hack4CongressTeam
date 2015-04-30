@@ -1,4 +1,8 @@
 {
+  "db": {
+    "name": "db",
+    "connector": "memory"
+  },
   "mySQL": {
     "name": "mySQL",
     "connector": "mysql",
