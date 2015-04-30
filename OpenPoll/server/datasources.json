@@ -1,6 +1,9 @@
 {
   "db": {
     "name": "db",
-    "connector": "memory"
-  }
+    "connector": "mysql",
+    "database": "openpoll",
+    "host": "localhost",
+    "user": "openpoll",
+    "password": "openPOLL!"
 }
