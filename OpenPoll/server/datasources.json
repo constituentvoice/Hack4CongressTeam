@@ -1,6 +1,6 @@
 {
   "db": {
-    "name": "db",
+    "name": "mySQL",
     "connector": "mysql",
     "database": "openpoll",
     "host": "localhost",
