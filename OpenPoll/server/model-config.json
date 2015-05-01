@@ -25,5 +25,17 @@
   "Role": {
     "dataSource": "db",
     "public": false
+  },
+  "Question": {
+    "dataSource": "mySQL",
+    "public": true
+  },
+  "Response": {
+    "dataSource": "mySQL",
+    "public": true
+  },
+  "Constituent": {
+    "dataSource": "mySQL",
+    "public": true
   }
 }
