@@ -4,11 +4,11 @@
     "connector": "memory"
   },
   "mySQL": {
+    "host": "localhost",
+    "database": "openpoll",
+    "password": "openPOLL!",
     "name": "mySQL",
     "connector": "mysql",
-    "database": "openpoll",
-    "host": "localhost",
-    "user": "openpoll",
-    "password": "openPOLL!"
+    "user": "openpoll"
   }
 }

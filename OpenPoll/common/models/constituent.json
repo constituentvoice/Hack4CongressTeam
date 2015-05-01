@@ -3,17 +3,20 @@
   "plural": "Constituents",
   "base": "PersistedModel",
   "idInjection": true,
-  "options": {
-    "validateUpsert": true
-  },
   "properties": {
     "cell": {
-      "type": "number",
+      "type": "string",
       "required": true
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "responses": {
+      "type": "hasMany",
+      "model": "Response",
+      "foreignKey": ""
+    }
+  },
   "acls": [],
   "methods": []
 }

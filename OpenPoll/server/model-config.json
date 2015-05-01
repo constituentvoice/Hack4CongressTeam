@@ -26,15 +26,15 @@
     "dataSource": "db",
     "public": false
   },
+  "Constituent": {
+    "dataSource": "mySQL",
+    "public": true
+  },
   "Question": {
     "dataSource": "mySQL",
     "public": true
   },
   "Response": {
-    "dataSource": "mySQL",
-    "public": true
-  },
-  "Constituent": {
     "dataSource": "mySQL",
     "public": true
   }

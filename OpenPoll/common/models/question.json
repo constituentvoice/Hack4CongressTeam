@@ -3,9 +3,6 @@
   "plural": "Questions",
   "base": "PersistedModel",
   "idInjection": true,
-  "options": {
-    "validateUpsert": true
-  },
   "properties": {
     "text": {
       "type": "string",
@@ -13,7 +10,13 @@
     }
   },
   "validations": [],
-  "relations": {},
+  "relations": {
+    "responses": {
+      "type": "hasMany",
+      "model": "Response",
+      "foreignKey": ""
+    }
+  },
   "acls": [],
   "methods": []
 }
