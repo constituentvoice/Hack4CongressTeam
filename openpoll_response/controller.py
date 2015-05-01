@@ -3,13 +3,14 @@ from simplekv.fs import FilesystemStore
 from flask_kvsession import KVSessionExtension
 from traceback import format_exc
 import config
-from models import db, User,Question,Response,TextSession
+#from models import db, User,Question,Response,TextSession
 import twilio.twiml
 from twilio.rest import TwilioRestClient
-from sqlalchemy.orm import exc
-import sunlight
-sunlight.config.API_KEY=config.sunlight_key
-from sunlight.congress import Congress
+import json
+#from sqlalchemy.orm import exc
+#import sunlight
+#sunlight.config.API_KEY=config.sunlight_key
+#from sunlight.congress import Congress
 
 tclient = TwilioRestClient(config.twilio_sid, config.twilio_secret)
 
@@ -18,10 +19,10 @@ app = Flask(__name__)
 store = FilesystemStore('/tmp')
 KVSessionExtension(store,app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = config.dsn
-app.config['SQLALCHEMY_ECHO'] = config.database_debug
+#app.config['SQLALCHEMY_DATABASE_URI'] = config.dsn
+#app.config['SQLALCHEMY_ECHO'] = config.database_debug
 app.config['SECRET_KEY'] = config.secret_key
-db.init_app(app)
+#db.init_app(app)
 
 @app.route('/dispatch', methods=['POST','GET'])
 def dispatch_request():
@@ -31,10 +32,13 @@ def dispatch_request():
 		ret_message = delete_user( request.values.get('From') )
 	elif session.get('question_id'): # response to a question
 		ret_message = process_response( request.values.get('From'), body, session.get('question_id') )
-	elif session.get('text_session_id'): # response to a request for more info (address)
-		ret_message = process_get_info(session.get('text_session_id', request.values.get('From'), body, _zip=request.values.get('FromZip'),state=request.values.get('FromState'))
-	else: # treat as signup
-		ret_message = process_signup( request.values.get('From'),body )
+	else:
+		ret_message = 'Please respond to a question'
+
+	#elif session.get('text_session_id'): # response to a request for more info (address)
+	#	ret_message = process_get_info(session.get('text_session_id', request.values.get('From'), body, _zip=request.values.get('FromZip'),state=request.values.get('FromState')))
+	#else: # treat as signup
+	#	ret_message = process_signup( request.values.get('From'),body )
 
 	resp = twilio.twiml.Response()
 	resp.message(ret_message)
@@ -42,6 +46,7 @@ def dispatch_request():
 
 @app.route('/broadcast', methods=['POST'])
 def broadcast():
+	"""
 	body = None
 	if request.values.get('body'):
 		body = request.values.get('body')
@@ -54,28 +59,23 @@ def broadcast():
 			message = client.messages.create(to=u.cell, from_=config.twilio_number, body=body)
 		except:
 			pass
+	"""
 	return jsonify({'status':'SUCCESS','message': 'Messages sent'} )
 
 def delete_user( cell ):
-	db.session.query(User).filter_by(cell=cell).delete()
-	db.session.query(TextResponse).filter_by(cell=cell).delete()
-	db.session.commit()
-
+	#db.session.query(User).filter_by(cell=cell).delete()
+	#db.session.query(TextResponse).filter_by(cell=cell).delete()
+	#db.session.commit()
+	
 	return "We're sorry to see you go. You have been unsubscribed."
 
 def process_response( _from, message, question_id ):
-	try:
-		user = db.session.query(User).filter_by(cell=_from).one()
-	except:
-		# TODO
-		# either the user doesnt exist or we have a duplicate number. 
-		# for now just pass
-		pass
+	
+	#res = Response( user_id=user.id, text=message, question_id=question_id )
+	#db.session.add(res)
+	#db.session.commit()
 
-	if user:
-		res = Response( user_id=user.id, text=message, question_id=question_id )
-		db.session.add(res)
-		db.session.commit()
+	requests.post('http://76.114.205.220:3000/explorer/Responses/create', data=json.dumps({'text':message, 'constituentId': 1,'questionId': 1} ), headers={'Content-Type:text/json'})
 
 	return 'Thanks for your input'
 
@@ -83,6 +83,7 @@ def process_get_info(text_session_id, _from, message, **kwargs):
 	# TODO
 	# read this information and try to find congressional district
 	# for now try to find by zip provided by twilio
+	"""
 	sess_rcd = db.session.query(TextSession).get(text_session_id)
 	_zip = kwargs.get('_zip')
 	state = kwargs.get('state')
@@ -106,11 +107,12 @@ def process_get_info(text_session_id, _from, message, **kwargs):
 			sess_rcd.state = state
 		
 		db.session.commit()
-
+	"""
 	return 'Thank you'
 
 def process_signup( _from, body ):
 	if 'SUBSCRIBE' in body:
+		"""
 		user = User(cell=_from)
 		db.session.add(user)
 
@@ -120,6 +122,7 @@ def process_signup( _from, body ):
 		db.session.commit()
 
 		session['text_session_id'] = txt_sess.id
+		"""
 	
 		return 'Thanks for signing up! Reply with your address so we can verify your district.'
 	else:
