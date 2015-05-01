@@ -7,6 +7,8 @@ import config
 import twilio.twiml
 from twilio.rest import TwilioRestClient
 import json
+import requests
+
 #from sqlalchemy.orm import exc
 #import sunlight
 #sunlight.config.API_KEY=config.sunlight_key
@@ -30,10 +32,8 @@ def dispatch_request():
 	ret_message = None
 	if 'STOP' in body:
 		ret_message = delete_user( request.values.get('From') )
-	elif session.get('question_id'): # response to a question
-		ret_message = process_response( request.values.get('From'), body, session.get('question_id') )
 	else:
-		ret_message = 'Please respond to a question'
+		ret_message = process_response( request.values.get('From'), body )
 
 	#elif session.get('text_session_id'): # response to a request for more info (address)
 	#	ret_message = process_get_info(session.get('text_session_id', request.values.get('From'), body, _zip=request.values.get('FromZip'),state=request.values.get('FromState')))
@@ -69,13 +69,16 @@ def delete_user( cell ):
 	
 	return "We're sorry to see you go. You have been unsubscribed."
 
-def process_response( _from, message, question_id ):
+def process_response( _from, message, question_id=None ):
+	print _from
+	print message
 	
 	#res = Response( user_id=user.id, text=message, question_id=question_id )
 	#db.session.add(res)
 	#db.session.commit()
 
-	requests.post('http://76.114.205.220:3000/explorer/Responses/create', data=json.dumps({'text':message, 'constituentId': 1,'questionId': 1} ), headers={'Content-Type:text/json'})
+	resp = requests.post('http://76.114.205.220:3000/api/Responses', data={'text':message, 'constituentId': 1,'questionId': 1})
+	print resp.text
 
 	return 'Thanks for your input'
 
@@ -127,3 +130,6 @@ def process_signup( _from, body ):
 		return 'Thanks for signing up! Reply with your address so we can verify your district.'
 	else:
 		return 'Trying to sign-up? Reply with SUBSCRIBE'
+
+if __name__ == '__main__':
+	app.run(debug=config.enable_debug)
